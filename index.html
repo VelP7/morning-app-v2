@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Начало V2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAFAFA; /* Светлый матовый фон */
+            -webkit-user-select: none;
+            user-select: none; 
+        }
+
+        input {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .fade-transition { transition: opacity 1s ease-in-out; }
+        
+        /* Дыхание: Восходящее солнце */
+        .breathe-circle { 
+            animation: breathe 10s ease-in-out forwards; 
+        }
+        
+        @keyframes breathe {
+            0% { transform: scale(0.8); opacity: 0.15; box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.3); }
+            40% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 40px 20px rgba(251, 191, 36, 0.2); border-color: rgba(251, 191, 36, 0.8); }
+            100% { transform: scale(0.8); opacity: 0; box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); border-color: rgba(251, 191, 36, 0); }
+        }
+
+        input:focus { outline: none; box-shadow: none; }
+        
+        /* Светлая матовая кнопка */
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(228, 228, 231, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="text-zinc-800 h-screen antialiased overflow-hidden selection:bg-amber-100">
+
+    <div class="max-w-md mx-auto h-full px-6 relative">
+        
+        <div id="screen-breathing" class="absolute inset-0 flex flex-col items-center justify-center z-40 fade-transition bg-[#FAFAFA]">
+            <div class="w-32 h-32 rounded-full border border-amber-300 breathe-circle absolute"></div>
+            <p id="breathing-text" class="text-lg font-medium text-zinc-500 z-10 transition-opacity duration-700 tracking-widest uppercase text-sm">
+                Вдох
+            </p>
+        </div>
+
+        <div id="screen-affirmation" class="absolute inset-0 flex flex-col justify-center px-6 z-30 opacity-0 pointer-events-none fade-transition bg-[#FAFAFA]">
+            <div class="flex-grow flex flex-col items-center justify-center">
+                <p id="daily-text-container" class="text-xl font-light leading-relaxed text-center text-zinc-800 w-full px-2 [text-wrap:balance]"></p>
+            </div>
+            
+            <div class="pb-12 w-full opacity-0 fade-transition" id="btn-responsibility-container">
+                <button onclick="goToAction()" class="w-full glass-btn hover:bg-zinc-50 text-zinc-600 font-medium tracking-wide py-4 rounded-lg transition-all text-sm uppercase">
+                    Принимаю ответственность
+                </button>
+            </div>
+        </div>
+
+        <div id="screen-action" class="absolute inset-0 flex flex-col justify-center px-6 z-20 opacity-0 pointer-events-none fade-transition bg-[#FAFAFA]">
+            <div class="flex-grow flex flex-col justify-center">
+                <p id="action-prompt-text" class="text-lg font-medium mb-12 text-center text-zinc-500"></p>
+                <input type="text" id="action-input" placeholder="" class="w-full bg-transparent border-b border-zinc-300 focus:border-zinc-500 text-2xl pb-3 text-center text-zinc-800 transition-colors placeholder-zinc-300" autocomplete="off">
+            </div>
+            
+            <div class="pb-12 w-full">
+                <button onclick="finishMorning()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-4 rounded-lg transition-colors text-sm uppercase tracking-wide shadow-lg">
+                    Начать день
+                </button>
+            </div>
+        </div>
+
+        <div id="screen-outro" class="absolute inset-0 flex flex-col items-center justify-center z-10 opacity-0 pointer-events-none fade-transition bg-[#FAFAFA]">
+            <div id="outro-content" class="flex flex-col items-center fade-transition transition-opacity duration-1000">
+                <p class="text-zinc-500 font-medium tracking-widest text-sm uppercase mb-8">Намерение принято</p>
+                <div class="flex flex-col items-center">
+                    <p class="text-4xl font-light text-zinc-800" id="streak-display">День 1</p>
+                    <p class="text-xl font-light text-zinc-500 mt-2 tracking-wide">начался</p>
+                </div>
+            </div>
+            
+            <p id="final-whisper" class="absolute text-zinc-400 font-medium tracking-widest text-xs uppercase opacity-0 transition-opacity duration-1000">
+                Отложи телефон
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        const journeyTexts = [
+            "Я делаю то, что должно, и отпускаю то, что не могу изменить. Мой фокус - на моих усилиях, а не на результате.",
+            "Суета мира бессильна, если я не отдаю ей своё внимание. Сегодня я выбираю глубину и концентрацию вместо скорости.",
+            "Я не жду идеального состояния. Вдохновение - это награда за начатое действие, а не условие для него. Я начинаю прямо сейчас.",
+            "Тревога питается мыслями о будущем. Я возвращаю себя в настоящее: здесь и сейчас есть только задача перед моими глазами.",
+            "Ошибки не определяют мою ценность, они лишь показывают, где мне нужно стать точнее. Я отказываюсь от иллюзии идеала и продолжаю идти.",
+            "Я не могу управлять ветром, но я управляю парусами. Пусть обстоятельства меняются, мое внутреннее ядро остается неподвижным.",
+            "Сегодня я выбираю дисциплину вместо быстрых удовольствий. Осознанный дискомфорт сейчас - это тренировка моей внутренней силы.",
+            "Сравнение себя с другими крадет мою силу. Мой единственный ориентир сегодня - моя вчерашняя версия.",
+            "Никто не придет, чтобы сделать мою работу за меня. Я беру полную ответственность за то место, где я нахожусь сегодня.",
+            "Я отказываюсь от ожиданий быстрых аплодисментов. Мой труд имеет ценность сам по себе, я делаю его ради процесса, а не ради оценки.",
+            "Моя энергия - мой главный ресурс. Я направляю её только на то, что имеет значение, и отказываюсь от пустых споров.",
+            "Любая проблема сегодня - это естественная часть пути. Я принимаю её без сопротивления и использую как топливо.",
+            "Дисциплина - это не ограничение, это отсечение лишнего. Я добровольно сужаю свой выбор, чтобы получить максимальный результат.",
+            "Я не верю в магию, я верю в математику усилий. Каждое маленькое действие сегодня плюсуется к моему капиталу завтра.",
+            "Я не пытаюсь проломить стену головой. Если путь закрыт, я сохраняю спокойствие и ищу дверь. Упрямство - это Эго, упорство - это мудрость.",
+            "У меня нет контроля над чужими словами и поступками, но моя реакция принадлежит только мне. Я выбираю тишину вместо оправданий.",
+            "Сегодня я практикую искусство маленьких шагов. Мне не нужно видеть всю лестницу, чтобы подняться на одну ступеньку.",
+            "Я отпускаю потребность доказывать свою правоту. Моя цель сегодня - решить задачу и двигаться дальше, а не кормить свое Эго.",
+            "Страх перед неудачей - это просто иллюзия ума. Я иду навстречу своему страху, потому что именно там спрятан мой потенциал.",
+            "Я искренне благодарю за то, что имею сейчас, и искренне сделаю то, что должно сделать сегодня.",
+            "Усталость - это сигнал к отдыху, а не к сдаче. Я даю себе право на паузу, чтобы потом ударить с новой силой.",
+            "Мои мысли - это инструменты. Я оставляю только те, которые помогают мне строить, и без сожаления выбрасываю те, что разрушают.",
+            "Я не требую от мира справедливости. Я навожу порядок там, к чему имеют доступ мои руки.",
+            "Моя сила в моей уязвимости. Признать свое незнание - значит открыть разум для нового опыта. Я в полной готовности учиться сегодня.",
+            "Ничто не длится вечно: ни успех, ни провал. Я сохраняю ровное отношение к победам и поражениям, продолжая делать свое дело.",
+            "Сегодня я говорю «нет» всему, что не соответствует моим главным ценностям. Мое «нет» освобождает пространство для настоящего.",
+            "Я перестаю бороться с реальностью и начинаю с ней танцевать. Я использую силу сопротивления среды для собственного ускорения.",
+            "Каждое слово, сказанное мной сегодня, должно быть либо правдивым, либо добрым, либо полезным. Иначе я выбираю молчание.",
+            "Мой разум ясен, мое тело готово, моя воля подчинена смыслу. Я полностью присутствую в сегодняшнем дне.",
+            "Я - не мои мысли, я - чистое сознание, которое за ними наблюдает. Из этой точки тишины я начинаю свой день и делаю свой главный шаг."
+        ];
+
+        const actionPrompts = [
+            "С каким намерением ты входишь в этот день?",
+            "На чем ты сфокусируешь свое внимание сегодня?"
+        ];
+
+        // ИЗМЕНЕНО: Ключи памяти для второй версии, чтобы они не конфликтовали с первой!
+        let currentStreak = parseInt(localStorage.getItem('embody_v2_streak')) || 0;
+        const lastEntryDate = localStorage.getItem('embody_v2_last_date');
+        const todayDate = new Date().toDateString();
+        let historyForAI = JSON.parse(localStorage.getItem('embody_v2_history_ai')) || [];
+
+        const textIndex = currentStreak % journeyTexts.length;
+        const currentText = journeyTexts[textIndex];
+        
+        const promptIndex = currentStreak % 2;
+        const currentPrompt = actionPrompts[promptIndex];
+
+        const screenBreathing = document.getElementById('screen-breathing');
+        const screenAffirmation = document.getElementById('screen-affirmation');
+        const screenAction = document.getElementById('screen-action');
+        const screenOutro = document.getElementById('screen-outro');
+        
+        const textContainer = document.getElementById('daily-text-container');
+        const promptTextContainer = document.getElementById('action-prompt-text');
+        
+        const btnResponsibility = document.getElementById('btn-responsibility-container');
+        const actionInput = document.getElementById('action-input');
+        const streakDisplay = document.getElementById('streak-display');
+        const breathingText = document.getElementById('breathing-text');
+
+        let appState = 'breathing';
+
+        window.onload = () => {
+            const formattedText = currentText.replace('. ', '.<br><br>');
+            textContainer.innerHTML = formattedText;
+            
+            promptTextContainer.innerText = currentPrompt; 
+
+            setTimeout(() => {
+                breathingText.style.opacity = '0';
+                setTimeout(() => {
+                    breathingText.innerText = 'ВЫДОХ';
+                    breathingText.style.opacity = '1';
+                }, 500); 
+            }, 3500);
+
+            setTimeout(() => {
+                screenBreathing.style.opacity = '0';
+                setTimeout(() => {
+                    screenBreathing.classList.add('hidden');
+                    screenAffirmation.classList.remove('pointer-events-none');
+                    screenAffirmation.style.opacity = '1';
+                    
+                    setTimeout(() => {
+                        btnResponsibility.style.opacity = '1';
+                        appState = 'affirmation_ready';
+                    }, 4000);
+                }, 1000);
+            }, 10000); 
+        };
+
+        function goToAction() {
+            if (appState !== 'affirmation_ready') return;
+            appState = 'action_screen';
+
+            screenAffirmation.style.opacity = '0';
+            screenAffirmation.classList.add('pointer-events-none');
+            setTimeout(() => {
+                screenAction.classList.remove('pointer-events-none');
+                screenAction.style.opacity = '1';
+                setTimeout(() => actionInput.focus(), 500);
+            }, 1000);
+        }
+
+        function finishMorning() {
+            const userAction = actionInput.value.trim(); 
+            if (!userAction) return; 
+            
+            if (lastEntryDate !== todayDate) {
+                currentStreak++;
+                
+                const aiDataPacket = {
+                    date: todayDate,
+                    dayOfChallenge: currentStreak,
+                    philosophyText: currentText, 
+                    askedQuestion: currentPrompt, 
+                    userCommitment: userAction
+                };
+                historyForAI.push(aiDataPacket);
+
+                // Сохраняем в новые ключи памяти V2
+                localStorage.setItem('embody_v2_streak', currentStreak);
+                localStorage.setItem('embody_v2_last_date', todayDate);
+                localStorage.setItem('embody_v2_history_ai', JSON.stringify(historyForAI));
+            }
+
+            streakDisplay.innerText = `День ${currentStreak}`;
+
+            screenAction.style.opacity = '0';
+            screenAction.classList.add('pointer-events-none');
+            
+            setTimeout(() => {
+                screenOutro.classList.remove('pointer-events-none');
+                screenOutro.style.opacity = '1';
+                
+                setTimeout(() => {
+                    document.getElementById('outro-content').style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        document.getElementById('final-whisper').style.opacity = '1';
+                    }, 1000);
+                }, 4000);
+
+            }, 1000);
+        }
+        
+        // ЗАЩИТА: Блокировка клавиш и контекстного меню
+        document.addEventListener("keydown", function(event) {
+            if (event.key === 'F12' || 
+               (event.ctrlKey && event.shiftKey && event.key === 'I') || 
+               (event.metaKey && event.altKey && event.key === 'I') || 
+               (event.ctrlKey && event.key === 'u') || (event.metaKey && event.key === 'u') || 
+               (event.ctrlKey && event.key === 's') || (event.metaKey && event.key === 's') || 
+               (event.ctrlKey && event.key === 'c') || (event.metaKey && event.key === 'c')) {
+                event.preventDefault();
+            }
+
+            if (event.key === "Enter") {
+                if (appState === 'affirmation_ready') {
+                    event.preventDefault();
+                    goToAction();
+                } else if (appState === 'action_screen' && document.activeElement === actionInput) {
+                    event.preventDefault();
+                    finishMorning();
+                }
+            }
+        });
+
+        document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+</body>
+</html>

@@ -10,7 +10,7 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #FAFAFA; /* Светлый матовый фон */
+            background-color: #FAFAFA; /* Светлый матовый фон (Алебастр) */
             -webkit-user-select: none;
             user-select: none; 
         }
@@ -22,20 +22,36 @@
 
         .fade-transition { transition: opacity 1s ease-in-out; }
         
-        /* Дыхание: Восходящее солнце */
+        /* Усовершенствованное дыхание: Теплый рассвет (Peach/Rose gradient на пике) */
         .breathe-circle { 
             animation: breathe 10s ease-in-out forwards; 
         }
         
         @keyframes breathe {
-            0% { transform: scale(0.8); opacity: 0.15; box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.3); }
-            40% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 40px 20px rgba(251, 191, 36, 0.2); border-color: rgba(251, 191, 36, 0.8); }
-            100% { transform: scale(0.8); opacity: 0; box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); border-color: rgba(251, 191, 36, 0); }
+            0% { 
+                transform: scale(0.8); 
+                opacity: 0.15; 
+                box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.15); 
+                border-color: rgba(251, 191, 36, 0.3); 
+            }
+            40% { 
+                transform: scale(1.4); 
+                opacity: 0.85; 
+                /* Переход в теплый персиково-розовый оттенок на пике вдоха */
+                box-shadow: 0 0 50px 25px rgba(251, 146, 60, 0.25); 
+                border-color: rgba(251, 146, 60, 0.8); 
+            }
+            100% { 
+                transform: scale(0.8); 
+                opacity: 0; 
+                box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); 
+                border-color: rgba(251, 191, 36, 0); 
+            }
         }
 
         input:focus { outline: none; box-shadow: none; }
         
-        /* Светлая матовая кнопка */
+        /* Светлая матовая кнопка (Стекло) */
         .glass-btn {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
@@ -49,10 +65,12 @@
     <div class="max-w-md mx-auto h-full px-6 relative">
         
         <div id="screen-breathing" class="absolute inset-0 flex flex-col items-center justify-center z-40 fade-transition bg-[#FAFAFA]">
-            <div class="w-32 h-32 rounded-full border border-amber-300 breathe-circle absolute"></div>
-            <p id="breathing-text" class="text-lg font-medium text-zinc-500 z-10 transition-opacity duration-700 tracking-widest uppercase text-sm">
-                Вдох
-            </p>
+            <div class="relative flex items-center justify-center">
+                <div class="w-32 h-32 rounded-full border breathe-circle absolute"></div>
+                <p id="breathing-text" class="text-sm font-medium text-zinc-500 z-10 transition-opacity duration-1000 tracking-widest uppercase">
+                    Вдох
+                </p>
+            </div>
         </div>
 
         <div id="screen-affirmation" class="absolute inset-0 flex flex-col justify-center px-6 z-30 opacity-0 pointer-events-none fade-transition bg-[#FAFAFA]">
@@ -135,7 +153,6 @@
             "На чем ты сфокусируешь свое внимание сегодня?"
         ];
 
-        // ИЗМЕНЕНО: Ключи памяти для второй версии, чтобы они не конфликтовали с первой!
         let currentStreak = parseInt(localStorage.getItem('embody_v2_streak')) || 0;
         const lastEntryDate = localStorage.getItem('embody_v2_last_date');
         const todayDate = new Date().toDateString();
@@ -168,12 +185,13 @@
             
             promptTextContainer.innerText = currentPrompt; 
 
+            // Тайминги пульсации и текста (с плавным растворением на пике)
             setTimeout(() => {
                 breathingText.style.opacity = '0';
                 setTimeout(() => {
                     breathingText.innerText = 'ВЫДОХ';
                     breathingText.style.opacity = '1';
-                }, 500); 
+                }, 1000); 
             }, 3500);
 
             setTimeout(() => {
@@ -220,7 +238,6 @@
                 };
                 historyForAI.push(aiDataPacket);
 
-                // Сохраняем в новые ключи памяти V2
                 localStorage.setItem('embody_v2_streak', currentStreak);
                 localStorage.setItem('embody_v2_last_date', todayDate);
                 localStorage.setItem('embody_v2_history_ai', JSON.stringify(historyForAI));
@@ -246,7 +263,7 @@
             }, 1000);
         }
         
-        // ЗАЩИТА: Блокировка клавиш и контекстного меню
+        // Защита Уровня 1 (отключение горячих клавиш и копирования)
         document.addEventListener("keydown", function(event) {
             if (event.key === 'F12' || 
                (event.ctrlKey && event.shiftKey && event.key === 'I') || 

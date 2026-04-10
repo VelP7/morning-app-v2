@@ -1,0 +1,17 @@
+{
+  "name": "Начало",
+  "short_name": "Начало",
+  "description": "Ежедневный ритуал фокусировки",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#FAFAFA",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -77,20 +77,18 @@
                     Вдох
                 </p>
             </div>
-        </div>
-
-        <div id="screen-affirmation" class="absolute inset-0 flex flex-col justify-center px-6 z-30 opacity-0 pointer-events-none fade-transition bg-[#FAFAFA]">
-            <div class="flex-grow flex flex-col items-center justify-center">
-                <p id="daily-text-container" class="text-xl font-light leading-relaxed text-center text-zinc-800 w-full px-2 [text-wrap:balance]"></p>
+     <div id="screen-action" class="absolute inset-0 flex flex-col justify-center px-6 z-20 opacity-0 pointer-events-none fade-transition bg-[#FAFAFA]">
+            <div class="flex-grow flex flex-col justify-center">
+                <p id="action-prompt-text" class="text-lg font-medium mb-12 text-center text-zinc-500"></p>
+                <input type="text" id="action-input" placeholder="" class="w-full bg-transparent border-b border-zinc-300 focus:border-zinc-500 text-2xl pb-3 text-center text-zinc-800 transition-colors placeholder-zinc-300" autocomplete="off">
             </div>
             
-            <div class="pb-12 w-full opacity-0 fade-transition" id="btn-responsibility-container">
-                <button onclick="goToAction()" class="w-full glass-btn hover:bg-zinc-50 text-zinc-600 font-medium tracking-wide py-4 rounded-lg transition-all text-sm uppercase">
-                    Принимаю ответственность
+            <div class="pb-12 w-full">
+                <button onclick="finishMorning()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-4 rounded-lg transition-colors text-sm uppercase tracking-wide shadow-lg">
+                    Начать день
                 </button>
             </div>
         </div>
-
         <div id="screen-action" class="absolute inset-0 flex flex-col justify-center px-6 z-20 opacity-0 pointer-events-none fade-transition bg-[#FAFAFA]">
             <div class="flex-grow flex flex-col justify-center">
                 <p id="action-prompt-text" class="text-lg font-medium mb-12 text-center text-zinc-500"></p>
